@@ -124,6 +124,12 @@
 							</select>
 						</div>
 						<div class="field">
+							<label>Select Bank Category</label>
+							<select id="dashboardCategory" class="select">
+								<option value="all">All Categories</option>
+							</select>
+						</div>
+						<div class="field">
 							<label>Min Rate</label>
 							<input id="dashboardMinRate" class="input" placeholder="e.g., 5" type="number" />
 						</div>
@@ -209,6 +215,7 @@
 
 			<section id="route-detailed" class="route">
 				<h2 class="section-title">Loan Application Details</h2>
+				<p class="muted">Please fill out all sections accurately and completely.</p>
 				<div class="grid two">
 					<div class="card">
 						<form id="detailedForm" autocomplete="off">
@@ -224,6 +231,7 @@
 								<div class="field"><label>Address (Permanent)</label><textarea class="textarea" name="addressPermanent"></textarea></div>
 								<div class="field"><label>Email</label><input class="input" name="email" type="email" /></div>
 								<div class="field"><label>Aadhaar / Voter ID / PAN Number</label><input class="input" name="govtId" /></div>
+								<div class="field"><label>Photo (Upload)</label><input class="input" name="photo" type="file" accept="image/*" /></div>
 							</div>
 							<h3>2. Employment & Income Details</h3>
 							<div class="grid two">
@@ -231,6 +239,7 @@
 								<div class="field"><label>Employer/Business Name</label><input class="input" name="employer" /></div>
 								<div class="field"><label>Monthly Income (Last 6 months avg)</label><input class="input" name="monthlyIncome" type="number" /></div>
 								<div class="field"><label>Additional Income Sources</label><input class="input" name="additionalIncome" /></div>
+								<div class="field"><label>Proof of Income (Upload)</label><input class="input" name="incomeProof" type="file" accept="image/*,application/pdf" /></div>
 							</div>
 							<h3>3. Financial Position</h3>
 							<div class="grid two">
@@ -244,6 +253,13 @@
 								<div class="field"><label>Account Number</label><input class="input" name="accountNumber" /></div>
 								<div class="field"><label>Type of Account</label><input class="input" name="accountType" /></div>
 								<div class="field"><label>Average Monthly Balance</label><input class="input" name="avgBalance" /></div>
+								<div class="field"><label>Passbook/Bank Statement Attached (Yes/No)</label>
+									<select class="select" name="passbookAttached">
+										<option value="">Select...</option>
+										<option>Yes</option>
+										<option>No</option>
+									</select>
+								</div>
 							</div>
 							<h3>5. Loan Requirement</h3>
 							<div class="grid two">
@@ -280,6 +296,7 @@
 						<div class="field"><label>Target Demographic</label><input id="aiPrompt" class="input" placeholder="e.g., rural youth seeking education loan" /></div>
 						<button id="getAi" class="btn"><i class="ti ti-brain"></i><span>Get Suggestions</span></button>
 						<div id="aiResult" class="ai-result hidden"></div>
+						<div id="aiError" class="ai-result error hidden">Error<br/><span class="muted">Could not fetch suggestions. Please try again.</span></div>
 					</div>
 				</div>
 			</section>

@@ -75,7 +75,7 @@ body {
 .mini-label { color: var(--muted); font-size: 12px; }
 .mini-value { font-weight: 700; font-size: 20px; }
 
-.filters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 12px; }
+.filters { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 12px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field.end { align-items: flex-end; justify-content: flex-end; }
 .field.range { grid-column: span 2; }
@@ -124,3 +124,9 @@ label { color: var(--muted); font-size: 12px; }
 #emiCard { display: none; }
 #emiCard.visible { display: block; }
 .hidden { display: none; }
+
+.table td.rate-high { color: #f5d90a; font-weight: 700; }
+.ai-result.error { border-color: var(--danger); background: #1a1010; color: #fecaca; }
+
+.field.invalid label { color: var(--danger); }
+.teal { color: var(--accent); }

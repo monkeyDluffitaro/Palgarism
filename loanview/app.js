@@ -76,16 +76,16 @@ const loanTypes = [
 ];
 
 const bankOfferings = [
-	{ bank: "State Bank of India", loanType: "Home Loan", rate: 8.6 },
-	{ bank: "State Bank of India", loanType: "Personal Loan", rate: 11.15 },
-	{ bank: "State Bank of India", loanType: "Vehicle Loan", rate: 8.85 },
-	{ bank: "State Bank of India", loanType: "Education Loan", rate: 9.2 },
-	{ bank: "State Bank of India", loanType: "Business Loan", rate: 12.0 },
-	{ bank: "State Bank of India", loanType: "Gold Loan", rate: 7.5 },
-	{ bank: "HDFC Bank", loanType: "Home Loan", rate: 8.7 },
-	{ bank: "HDFC Bank", loanType: "Personal Loan", rate: 11.0 },
-	{ bank: "ICICI Bank", loanType: "Vehicle Loan", rate: 9.1 },
-	{ bank: "Axis Bank", loanType: "Education Loan", rate: 9.3 },
+	{ bank: "State Bank of India", category: "Public Sector", loanType: "Home Loan", rate: 8.6 },
+	{ bank: "State Bank of India", category: "Public Sector", loanType: "Personal Loan", rate: 11.15 },
+	{ bank: "State Bank of India", category: "Public Sector", loanType: "Vehicle Loan", rate: 8.85 },
+	{ bank: "State Bank of India", category: "Public Sector", loanType: "Education Loan", rate: 9.2 },
+	{ bank: "State Bank of India", category: "Public Sector", loanType: "Business Loan", rate: 12.0 },
+	{ bank: "State Bank of India", category: "Public Sector", loanType: "Gold Loan", rate: 7.5 },
+	{ bank: "HDFC Bank", category: "Private", loanType: "Home Loan", rate: 8.7 },
+	{ bank: "HDFC Bank", category: "Private", loanType: "Personal Loan", rate: 11.0 },
+	{ bank: "ICICI Bank", category: "Private", loanType: "Vehicle Loan", rate: 9.1 },
+	{ bank: "Axis Bank", category: "Private", loanType: "Education Loan", rate: 9.3 },
 ];
 
 // Populate selectors
@@ -111,6 +111,13 @@ const bankOfferings = [
 		opt.textContent = b;
 		dashBank.appendChild(opt);
 	});
+	const dashCategory = el("dashboardCategory");
+	[...new Set(bankOfferings.map((b) => b.category))].forEach((c) => {
+		const opt = document.createElement("option");
+		opt.value = c;
+		opt.textContent = c;
+		dashCategory.appendChild(opt);
+	});
 })();
 
 // Dashboard offerings render
@@ -120,23 +127,26 @@ function renderOfferings() {
 	const q = (el("dashboardSearch").value || "").toLowerCase();
 	const bank = el("dashboardBank").value;
 	const type = el("dashboardLoanType").value;
+	const category = el("dashboardCategory").value;
 	const min = parseFloat(el("dashboardMinRate").value);
 	const max = parseFloat(el("dashboardMaxRate").value);
 	const filtered = bankOfferings.filter((o) => {
 		const matchesQ = `${o.bank} ${o.loanType}`.toLowerCase().includes(q);
 		const matchesBank = bank === "all" || o.bank === bank;
+		const matchesCat = category === "all" || o.category === category;
 		const matchesType = type === "all" || o.loanType === type;
 		const matchesMin = isNaN(min) || o.rate >= min;
 		const matchesMax = isNaN(max) || o.rate <= max;
-		return matchesQ && matchesBank && matchesType && matchesMin && matchesMax;
+		return matchesQ && matchesBank && matchesCat && matchesType && matchesMin && matchesMax;
 	});
 	filtered.forEach((o) => {
 		const tr = document.createElement("tr");
-		tr.innerHTML = `<td>${o.bank}</td><td>${o.loanType}</td><td>${o.rate.toFixed(2)}%</td><td><i class='ti ti-info-circle'></i></td>`;
+		const rateClass = o.rate >= 11 ? "rate-high" : "";
+		tr.innerHTML = `<td>${o.bank}</td><td>${o.loanType}</td><td class='${rateClass}'>${o.rate.toFixed(2)}%</td><td><i class='ti ti-info-circle'></i></td>`;
 		tbody.appendChild(tr);
 	});
 }
-["dashboardSearch", "dashboardBank", "dashboardLoanType", "dashboardMinRate", "dashboardMaxRate"].forEach((id) => {
+["dashboardSearch", "dashboardBank", "dashboardLoanType", "dashboardCategory", "dashboardMinRate", "dashboardMaxRate"].forEach((id) => {
 	el(id).addEventListener("input", renderOfferings);
 });
 renderOfferings();
@@ -368,6 +378,9 @@ function renderReport() {
 		<div class='form-nav end'><button id='downloadPdf' class='btn'><i class='ti ti-download'></i><span>Download PDF Report</span></button></div>
 	`;
 	el("downloadPdf").addEventListener("click", downloadPdfReport);
+	// Also wire sample button if visible
+	const sampleBtn = document.getElementById("downloadSample");
+	if (sampleBtn) sampleBtn.onclick = () => downloadPdfReport();
 }
 
 async function downloadPdfReport() {
@@ -401,6 +414,8 @@ async function downloadPdfReport() {
 el("getAi").addEventListener("click", async () => {
 	const target = el("aiPrompt").value.trim();
 	const box = el("aiResult");
+	const err = el("aiError");
+	err.classList.add("hidden");
 	box.classList.remove("hidden");
 	box.textContent = "Fetching suggestions...";
 	try {
@@ -415,7 +430,8 @@ el("getAi").addEventListener("click", async () => {
 		];
 		box.innerHTML = `<ul>${tips.map((t) => `<li>${t}</li>`).join("")}</ul>`;
 	} catch (err) {
-		box.innerHTML = `<div class='toast error'>Error<br/><span class='muted'>Could not fetch suggestions. Please try again.</span></div>`;
+		box.classList.add("hidden");
+		err.classList.remove("hidden");
 	}
 });
 
