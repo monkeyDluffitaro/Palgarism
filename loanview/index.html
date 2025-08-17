@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>LoanView</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+	<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+	<div class="app-container">
+		<aside class="sidebar">
+			<div class="brand">
+				<i class="ti ti-building-bank"></i>
+				<span>LoanView</span>
+			</div>
+			<nav class="nav">
+				<button class="nav-item active" data-route="dashboard">
+					<i class="ti ti-layout-dashboard"></i>
+					<span>Dashboard</span>
+				</button>
+				<button class="nav-item" data-route="apply">
+					<i class="ti ti-file-text"></i>
+					<span>Apply for Loan</span>
+				</button>
+				<button class="nav-item" data-route="detailed">
+					<i class="ti ti-file-certificate"></i>
+					<span>Detailed Application</span>
+				</button>
+				<button class="nav-item" data-route="view-applications">
+					<i class="ti ti-notebook"></i>
+					<span>View Applications</span>
+				</button>
+				<button class="nav-item" data-route="compare">
+					<i class="ti ti-git-branch"></i>
+					<span>Compare Loans</span>
+				</button>
+				<button class="nav-item" data-route="rates">
+					<i class="ti ti-percentage"></i>
+					<span>Interest Rates</span>
+				</button>
+				<button class="nav-item" data-route="report">
+					<i class="ti ti-download"></i>
+					<span>Download Report</span>
+				</button>
+			</nav>
+		</aside>
+		<main class="content">
+			<header class="topbar">
+				<div class="page-title">
+					<i class="ti ti-building-bank"></i>
+					<h1 id="pageTitle">Loan Dashboard</h1>
+				</div>
+				<div class="topbar-actions">
+					<select id="language" class="select sm">
+						<option>English</option>
+					</select>
+					<button id="themeToggle" class="icon-btn" title="Toggle theme">
+						<i class="ti ti-sun"></i>
+					</button>
+				</div>
+			</header>
+
+			<section id="route-dashboard" class="route visible">
+				<h2 class="section-title">
+					<i class="ti ti-building-bank"></i>
+					<span>Loan Dashboard</span>
+				</h2>
+				<div class="grid cards-3">
+					<div class="card stat">
+						<div class="stat-icon"><i class="ti ti-calculator"></i></div>
+						<div class="stat-label">Total Loans</div>
+						<div class="stat-value" id="totalLoans">1,250</div>
+					</div>
+					<div class="card stat">
+						<div class="stat-icon"><i class="ti ti-currency-rupee"></i></div>
+						<div class="stat-label">Average Loan Size (INR)</div>
+						<div class="stat-value" id="avgLoan">₹500,000.00</div>
+					</div>
+					<div class="card stat">
+						<div class="stat-icon"><i class="ti ti-percentage"></i></div>
+						<div class="stat-label">Approval Rate</div>
+						<div class="stat-value" id="approvalRate">75%</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-header">
+						<h3>Key Rate Statistics</h3>
+					</div>
+					<div class="grid cards-3 compact">
+						<div class="mini-stat">
+							<div class="mini-label">Overall Min. Rate</div>
+							<div class="mini-value">7.50%</div>
+						</div>
+						<div class="mini-stat">
+							<div class="mini-label">Overall Avg. Rate</div>
+							<div class="mini-value">9.72%</div>
+						</div>
+						<div class="mini-stat">
+							<div class="mini-label">Overall Max. Rate</div>
+							<div class="mini-value">12.50%</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="filters">
+						<div class="field">
+							<label>Search by bank or loan type</label>
+							<input id="dashboardSearch" class="input" placeholder="Search by bank or loan type..." />
+						</div>
+						<div class="field">
+							<label>Select Bank</label>
+							<select id="dashboardBank" class="select">
+								<option value="all">All Banks</option>
+							</select>
+						</div>
+						<div class="field">
+							<label>Select Loan Type</label>
+							<select id="dashboardLoanType" class="select">
+								<option value="all">All Loan Types</option>
+							</select>
+						</div>
+						<div class="field">
+							<label>Select Bank Category</label>
+							<select id="dashboardCategory" class="select">
+								<option value="all">All Categories</option>
+							</select>
+						</div>
+						<div class="field">
+							<label>Min Rate</label>
+							<input id="dashboardMinRate" class="input" placeholder="e.g., 5" type="number" />
+						</div>
+						<div class="field">
+							<label>Max Rate</label>
+							<input id="dashboardMaxRate" class="input" placeholder="e.g., 15" type="number" />
+						</div>
+						<div class="field end">
+							<button id="downloadCsv" class="btn">
+								<i class="ti ti-download"></i>
+								<span>Download CSV</span>
+							</button>
+						</div>
+					</div>
+
+					<table class="table" id="offeringsTable">
+						<thead>
+							<tr>
+								<th>Bank Name</th>
+								<th>Loan Type</th>
+								<th>Interest Rate (%)</th>
+								<th>Info</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</section>
+
+			<section id="route-apply" class="route">
+				<h2 class="section-title">Select Loan Type</h2>
+				<div class="card">
+					<div class="stepper"><div class="bar"><div class="progress" style="width: 20%"></div></div><div class="step-label">Step <span id="applyStep">1</span> of 5</div></div>
+					<form id="applyForm" autocomplete="off">
+						<div class="apply-step" data-step="1">
+							<div class="field">
+								<label>Select Loan Type</label>
+								<select id="applyLoanType" class="select">
+									<option value="" disabled selected>Choose a loan type...</option>
+								</select>
+							</div>
+						</div>
+						<div class="apply-step hidden" data-step="2">
+							<h3>Personal Details</h3>
+							<div class="grid two">
+								<div class="field"><label>Full Name</label><input class="input" id="applyFullName" placeholder="Enter your full name" /></div>
+								<div class="field"><label>Email Address</label><input class="input" id="applyEmail" placeholder="Enter your email" type="email" /></div>
+								<div class="field"><label>Phone Number</label><input class="input" id="applyPhone" placeholder="Enter your phone number" /></div>
+							</div>
+						</div>
+						<div class="apply-step hidden" data-step="3">
+							<h3>Income Details</h3>
+							<div class="grid two">
+								<div class="field"><label>Monthly Income (INR)</label><input class="input" id="applyIncome" type="number" placeholder="50000" /></div>
+								<div class="field"><label>Employment Status</label>
+									<select class="select" id="applyEmployment">
+										<option value="" disabled selected>Select employment status</option>
+										<option>Employed</option>
+										<option>Self-Employed</option>
+										<option>Unemployed</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="apply-step hidden" data-step="4">
+							<h3>Loan Preferences</h3>
+							<div class="grid two">
+								<div class="field"><label>Desired Amount (INR)</label><input class="input" id="applyAmount" type="number" placeholder="500000" /></div>
+								<div class="field"><label>Tenure (Months)</label><input class="input" id="applyTenure" type="number" placeholder="60" /></div>
+							</div>
+						</div>
+						<div class="apply-step hidden" data-step="5">
+							<h3>Review & Submit</h3>
+							<div id="applyReview" class="review"></div>
+						</div>
+						<div class="form-nav">
+							<button type="button" class="btn ghost" id="applyPrev">Previous</button>
+							<button type="button" class="btn" id="applyNext">Next</button>
+						</div>
+					</form>
+				</div>
+			</section>
+
+			<section id="route-detailed" class="route">
+				<h2 class="section-title">Loan Application Details</h2>
+				<p class="muted">Please fill out all sections accurately and completely.</p>
+				<div class="grid two">
+					<div class="card">
+						<form id="detailedForm" autocomplete="off">
+							<h3>1. Personal Details</h3>
+							<div class="grid two">
+								<div class="field"><label>Full Name</label><input class="input" name="fullName" /></div>
+								<div class="field"><label>Father's / Husband's Name</label><input class="input" name="guardianName" /></div>
+								<div class="field"><label>Date of Birth / Age</label><input class="input" name="dob" placeholder="YYYY-MM-DD" /></div>
+								<div class="field"><label>Gender</label><input class="input" name="gender" /></div>
+								<div class="field"><label>Marital Status</label><input class="input" name="maritalStatus" /></div>
+								<div class="field"><label>Phone Number</label><input class="input" name="phone" /></div>
+								<div class="field"><label>Address (Current)</label><textarea class="textarea" name="addressCurrent"></textarea></div>
+								<div class="field"><label>Address (Permanent)</label><textarea class="textarea" name="addressPermanent"></textarea></div>
+								<div class="field"><label>Email</label><input class="input" name="email" type="email" /></div>
+								<div class="field"><label>Aadhaar / Voter ID / PAN Number</label><input class="input" name="govtId" /></div>
+								<div class="field"><label>Photo (Upload)</label><input class="input" name="photo" type="file" accept="image/*" /></div>
+							</div>
+							<h3>2. Employment & Income Details</h3>
+							<div class="grid two">
+								<div class="field"><label>Occupation</label><input class="input" name="occupation" /></div>
+								<div class="field"><label>Employer/Business Name</label><input class="input" name="employer" /></div>
+								<div class="field"><label>Monthly Income (Last 6 months avg)</label><input class="input" name="monthlyIncome" type="number" /></div>
+								<div class="field"><label>Additional Income Sources</label><input class="input" name="additionalIncome" /></div>
+								<div class="field"><label>Proof of Income (Upload)</label><input class="input" name="incomeProof" type="file" accept="image/*,application/pdf" /></div>
+							</div>
+							<h3>3. Financial Position</h3>
+							<div class="grid two">
+								<div class="field"><label>Assets Owned (Land, House, Livestock, Savings)</label><textarea class="textarea" name="assets"></textarea></div>
+								<div class="field"><label>Liabilities (Existing Loans, Monthly Debts)</label><textarea class="textarea" name="liabilities"></textarea></div>
+								<div class="field"><label>Net Worth (Assets - Liabilities)</label><input class="input" name="netWorth" /></div>
+							</div>
+							<h3>4. Bank Account Details</h3>
+							<div class="grid two">
+								<div class="field"><label>Bank Name & Branch</label><input class="input" name="bankName" /></div>
+								<div class="field"><label>Account Number</label><input class="input" name="accountNumber" /></div>
+								<div class="field"><label>Type of Account</label><input class="input" name="accountType" /></div>
+								<div class="field"><label>Average Monthly Balance</label><input class="input" name="avgBalance" /></div>
+								<div class="field"><label>Passbook/Bank Statement Attached (Yes/No)</label>
+									<select class="select" name="passbookAttached">
+										<option value="">Select...</option>
+										<option>Yes</option>
+										<option>No</option>
+									</select>
+								</div>
+							</div>
+							<h3>5. Loan Requirement</h3>
+							<div class="grid two">
+								<div class="field"><label>Purpose of Loan</label><textarea class="textarea" name="purpose"></textarea></div>
+								<div class="field"><label>Loan Amount Needed</label><input class="input" name="amountNeeded" type="number" /></div>
+								<div class="field"><label>Preferred Repayment Period</label><input class="input" name="repaymentPeriod" /></div>
+								<div class="field"><label>Type of Loan</label><input class="input" name="loanType" /></div>
+							</div>
+							<h3>6. Creditworthiness & Supporting Documents</h3>
+							<div class="grid two">
+								<div class="field"><label>Credit Score</label><input class="input" name="creditScore" /></div>
+								<div class="field"><label>Collateral Offered</label><textarea class="textarea" name="collateral"></textarea></div>
+								<div class="field"><label>Guarantor Details</label><textarea class="textarea" name="guarantor"></textarea></div>
+							</div>
+							<h3>7. Supporting Government Schemes</h3>
+							<div class="field"><label>Eligible Schemes & IDs</label><textarea class="textarea" name="schemes"></textarea></div>
+							<h3>8. Signatures & Verification</h3>
+							<div class="grid three">
+								<div class="field"><label>Borrower's Signature/Thumb Impression</label><input class="input" name="signature" /></div>
+								<div class="field"><label>Local Panchayat/Community Leader Verification</label><input class="input" name="communityVerification" /></div>
+								<div class="field"><label>Bank Officer Verification</label><input class="input" name="bankVerification" /></div>
+							</div>
+							<div class="form-nav end">
+								<button type="button" id="saveDetailed" class="btn">
+									<i class="ti ti-device-floppy"></i>
+									<span>Save & Submit Application</span>
+								</button>
+							</div>
+						</form>
+					</div>
+					<div class="card">
+						<h3>AI-Powered Localization Insights</h3>
+						<p class="muted">Enter a target demographic to get culturally relevant visualization and interpretation suggestions for the loan data.</p>
+						<div class="field"><label>Target Demographic</label><input id="aiPrompt" class="input" placeholder="e.g., rural youth seeking education loan" /></div>
+						<button id="getAi" class="btn"><i class="ti ti-brain"></i><span>Get Suggestions</span></button>
+						<div id="aiResult" class="ai-result hidden"></div>
+						<div id="aiError" class="ai-result error hidden">Error<br/><span class="muted">Could not fetch suggestions. Please try again.</span></div>
+					</div>
+				</div>
+			</section>
+
+			<section id="route-view-applications" class="route">
+				<h2 class="section-title">View Applications</h2>
+				<div id="applicationsList" class="card empty">
+					<div class="empty-state">
+						<i class="ti ti-search"></i>
+						<div>
+							<h3>No Saved Applications</h3>
+							<p class="muted">Submitted applications from the 'Detailed Application' form will appear here.</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="route-compare" class="route">
+				<h2 class="section-title"><i class="ti ti-building-bank"></i><span>Compare Loan Options</span></h2>
+				<div class="card">
+					<div class="card-header"><h3>Loan Type Comparison</h3></div>
+					<table class="table" id="compareTable">
+						<thead>
+							<tr>
+								<th>Loan Type</th>
+								<th>Interest Rate</th>
+								<th>Max Tenure (Months)</th>
+								<th>Max Amount (INR)</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<div class="card" id="emiCard">
+					<div class="card-header"><h3><i class="ti ti-calculator"></i> Calculate EMI</h3><p id="emiRateNote" class="muted"></p></div>
+					<div class="grid two">
+						<div class="field range">
+							<label>Loan Amount (INR)</label>
+							<input type="range" id="emiAmountRange" min="50000" max="10000000" step="5000" />
+							<input class="input" id="emiAmount" type="number" />
+						</div>
+						<div class="field"><label>Loan Tenure (Months)</label><input class="input" id="emiTenure" type="number" value="60" /></div>
+						<div class="field"><label>Interest Rate (%)</label><input class="input" id="emiRate" type="number" value="8.5" step="0.01" /></div>
+					</div>
+					<div class="form-nav">
+						<button id="calcEmi" class="btn"><i class="ti ti-graph"></i><span>Calculate & Save for Report</span></button>
+					</div>
+					<div id="emiResult" class="emi-result hidden"></div>
+				</div>
+			</section>
+
+			<section id="route-rates" class="route">
+				<h2 class="section-title">Current Interest Rates</h2>
+				<div class="card">
+					<table class="table" id="ratesTable">
+						<thead>
+							<tr><th>Loan Category</th><th>Interest Rate (p.a.)</th></tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+					<p class="muted" id="ratesUpdated"></p>
+				</div>
+			</section>
+
+			<section id="route-report" class="route">
+				<h2 class="section-title">Generate Loan Report</h2>
+				<div class="card" id="reportCard">
+					<div id="reportEmpty">
+						<p class="muted">No detailed application has been saved yet. You can save one from the 'Detailed Application' page.</p>
+						<p class="muted">No loan data calculated yet. Please go to the 'Compare Loans' page to calculate your EMI. The report will be generated using sample data.</p>
+						<button id="downloadSample" class="btn"><i class="ti ti-download"></i><span>Download Sample Report</span></button>
+					</div>
+					<div id="reportReady" class="hidden"></div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<div id="toast" class="toast hidden"></div>
+
+	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+	<script src="./app.js"></script>
+</body>
+</html>
